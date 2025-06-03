@@ -32,8 +32,13 @@ func main() {
 		templ.ExecuteTemplate(w, "todo-list-element", todo)
 	}
 
+	// API handlers
 	http.HandleFunc("/", todosHandler)
 	http.HandleFunc("/add-todo", addTodoHandler)
+
+	// Static files
+	fs := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	log.Fatal(http.ListenAndServe(":9090", nil))
 }
