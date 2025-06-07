@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package greeter.v1;
+
+option go_package = "github.com/knanshon/cez/gen/api/greeter/v1;greeterv1";
+
+service GreeterService {
+  rpc Greet(GreetRequest) returns (GreetResponse) {} // Changed method name from Add to Greet
+}
+
+message GreetRequest {
+  string name = 1;
+}
+
+message GreetResponse {
+  string greeting = 1;
+}

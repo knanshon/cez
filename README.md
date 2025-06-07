@@ -1,26 +1,30 @@
-# Go HTMX Todo Application
+# cez - Connect RPC Greeter Service
 
-This is a simple Todo application built with Go and HTMX. The application allows you to view and add Todo items using a web interface.
-
-## Launch Instructions
-
-1. Ensure that [Go is installed](https://golang.org/dl/).
-2. From the project root, run:
-    ```sh
-    go run main.go
-    ```
-3. The server will start on port `9090`.
-
-## Usage Instructions
-
-1. Open your web browser and navigate to [http://localhost:9090](http://localhost:9090).
-2. The page displays a list of todos.
-3. To add a new todo, fill in the "Message" field and hit the **Create** button. The new todo will be appended to the list using HTMX.
+This project implements a simple Connect RPC GreeterService using Go. The service is hosted under the `cmd/server` directory.
 
 ## Project Structure
 
-- [main.go](/Users/barrynorthern/personal/cez/main.go) &ndash; Contains the HTTP server implementation and handler functions.
-- [index.html](/Users/barrynorthern/personal/cez/index.html) &ndash; The HTML template that displays the todo list and form.
-- [LICENSE](/Users/barrynorthern/personal/cez/LICENSE) &ndash; License details.
+- **cmd/server/main.go** – Entry point for the RPC server.
+- **internal/api/greeter/** – Contains the service implementation and generated handler code from the proto definition.
+- **go.mod** – Module file declaring the module as `cez`.
 
-Enjoy using the application!
+## Prerequisites
+
+- Go 1.24.2 or later installed.
+- [Optional] bufbuild/connect-go package if not vendored.
+
+## Launch Instructions
+
+To run the server, execute the following commands from the project root:
+
+```sh
+
+```
+
+The server will start on port `8080` and will be accessible via the Connect RPC endpoint for the GreeterService.
+
+## Usage
+
+Clients can connect to the service at `http://localhost:8080` using the Connect protocol.
+
+Enjoy experimenting with your simple Connect RPC service!
