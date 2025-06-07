@@ -1,0 +1,9 @@
+# buf.yaml
+version: v1
+name: github.com/knanshon/cez
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE
