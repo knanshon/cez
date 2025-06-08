@@ -7,11 +7,14 @@ This project implements a simple Connect RPC service in Go. The service is built
 - **api/greeter/v1/service.proto** – Protocol Buffers definition for the GreeterService. See [service.proto](api/greeter/v1/service.proto).
 - **cmd/server/main.go** – Entry point for the RPC server. See [main.go](cmd/server/main.go).
 - **internal/greeter/service.go** – Service implementation for the GreeterService. See [service.go](internal/greeter/service.go).
-- **gen/** – Contains generated Go code for the protocol buffers and Connect RPC handler.
+- **gen/** – Contains generated Go code for the Protocol Buffers files and Connect RPC handler.
   - [service.pb.go](gen/api/greeter/v1/service.pb.go)
   - [service.connect.go](gen/api/greeter/v1/greeterv1connect/service.connect.go)
+- **generate.go** – A helper file that orchestrates code generation via `go generate ./...` (invoking both `buf generate` and the JSON schema generation script).
+- **tools.go** – Declares build dependencies so that Go modules include necessary code-generation tools.
 - **buf.gen.yaml & buf.yaml** – Configuration files for [buf](https://docs.buf.build/) to generate code.
 - **go.mod** – Go module file.
+- **bootstrap.sh** – A script to set up non-Go dependencies (like protoc and Buf CLI) and to generate all code, building the server.
 - **web/static/** – Static assets for the web front-end (HTML, CSS). See [index.html](web/static/index.html) and [style.css](web/static/style.css).
 - **LICENSE** – Project license.
 
@@ -21,27 +24,38 @@ This project implements a simple Connect RPC service in Go. The service is built
 - [Buf](https://docs.buf.build/installation) (for generating code)
 - Dependencies will be managed via Go modules.
 
-## Code Generation
+## Bootstrap & Code Generation
 
-This project uses buf to generate Go and Connect code from the `.proto` definitions.
+A new bootstrap script sets up the project by installing non-Go dependencies and ensuring that Go-based tools are installed. It also runs the code generation and builds the server.
 
-To generate the code, run:
+To run the bootstrap process, use:
 
 ```sh
-buf generate
+./bootstrap.sh
 ```
 
-This will generate files in the `gen/` directory according to the configuration in [buf.gen.yaml](buf.gen.yaml).
+This script does the following:
+- Installs non-Go dependencies like `protoc` and the Buf CLI (using Homebrew on macOS).
+- Runs `go mod tidy` to sync build dependencies (including those declared in `tools.go`).
+- Executes `go generate ./...` (as configured in [generate.go](generate.go)) which:
+  - Runs `buf generate` to produce the Go and Connect RPC client code in the `gen/` directory.
+  - Executes the script at `./scripts/generate_schemas.sh` to clear and generate fresh JSON schema files from `api/greeter/v1/service.proto` into the `web/schemas` directory.
+
+**Note:** If you encounter a "Permission denied" error with the JSON schemas script, make it executable by running:
+
+```sh
+chmod +x scripts/generate_schemas.sh
+```
 
 ## Running the Server
 
-You can launch the server with:
+After bootstrapping, you can launch the server with:
 
 ```sh
-go run cmd/server/main.go
+./bin/server
 ```
 
-The server will start on port `8080` and host:
+The server will start on port `8080` and provide:
 - A standard HTTP endpoint at `/api/hello`
 - The Connect RPC endpoint for the GreeterService at `/greeter.v1.GreeterService/`
 
