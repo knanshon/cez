@@ -6,22 +6,8 @@ body {
 }
 
 h1 {
-    color: #0275d8;
-    text-align: center;
+    color: #4620c4;
     margin-bottom: 30px;
-}
-
-ul#todo-list {
-    list-style: disc;
-    max-width: 600px;
-    padding: 1rem 2rem;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-ul#todo-list li {
-    margin-bottom: 10px;
 }
 
 form {
