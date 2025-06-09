@@ -1,6 +1,6 @@
-# cez - Connect RPC Greeter Service
+# cez - Connect RPC API Explorer
 
-This project implements a simple Connect RPC service in Go. The service is built around a gRPC-like API defined using Protocol Buffers and exposed using [Connect](https://connectrpc.com/). It includes both a backend and a simple web front-end.
+This project implements a simple Connect RPC service in Go and explores how to generate an API explorer UI for it. The service is built around a gRPC-like API defined using Protocol Buffers and exposed using [Connect](https://connectrpc.com/). It includes both a backend and a simple web front-end.
 
 ## Project Structure
 

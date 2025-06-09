@@ -41,7 +41,7 @@ func ExplorerPage() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"container\"><h2>API List</h2><p>Select an API endpoint from the list below to explore it.</p><div id=\"api-explorer-content\">Loading API list...</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"container\"><h2>API Explorer</h2><div id=\"api-method-selector-wrapper\" hx-get=\"/api-explorer/methods\" hx-trigger=\"load\" hx-target=\"this\" hx-swap=\"outerHTML\">Loading API methods...</div><div id=\"api-form-area\"></div><hr><h3>API Response:</h3><div id=\"api-response-viewer\" class=\"response-viewer\"><pre><code>(No response yet)</code></pre></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
