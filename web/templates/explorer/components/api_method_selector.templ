@@ -1,12 +1,12 @@
-package templates
+package explorer_components
 
 // This component will receive a slice of maps (representing your API methods)
 // and render a dropdown.
-templ APIMethodSelector(methods []map[string]string) {
+templ ApiMethodSelector(methods []map[string]string) {
     <div id="api-method-selector">
         <label for="method-select">Select API Method:</label>
         <select id="method-select" class="form-control"
-                hx-get="/api-explorer/form"     
+                hx-get="/explorer/components/api-form-builder"     
                 hx-trigger="change"          
                 hx-target="#api-form-area"     
                 hx-swap="innerHTML"              
