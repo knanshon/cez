@@ -1,12 +1,14 @@
-package templates
+package explorer
 
-templ ExplorerPage() {
-    @layout() {
+import templates "github.com/knanshon/cez/web/templates"
+
+templ Page() {
+    @templates.Layout() {
         <div class="container">
             <h2>API Explorer</h2>
 
             <div id="api-method-selector-wrapper"
-                 hx-get="/api-explorer/methods" 
+                 hx-get="/explorer/components/api-method-selector" 
                  hx-trigger="load" 
                  hx-target="this" 
                  hx-swap="outerHTML">
