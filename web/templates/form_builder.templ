@@ -1,0 +1,14 @@
+package templates
+
+import "encoding/json" 
+
+// FormBuilder takes the schema name, raw schema data, and context for the API call.
+templ FormBuilder(schemaName string, schemaData json.RawMessage, serviceName string, methodName string, apiEndpoint string) {
+    <div class="api-form-container">
+        <h3>Form for { schemaName } ({ serviceName }/{ methodName })</h3>
+        <p>This form will dynamically build fields based on the schema.</p>
+        <p>Target Endpoint: <code>{ apiEndpoint }</code></p>
+        <h4>Raw Schema:</h4>
+        <pre><code>{ string(schemaData) }</code></pre>
+    </div>
+}
