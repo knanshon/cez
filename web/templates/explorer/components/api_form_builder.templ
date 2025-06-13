@@ -1,14 +1,128 @@
 package explorer_components
 
-import "encoding/json" 
+import "encoding/json"
+import "fmt"
+import "strings"
 
-// Takes the schema name, raw schema data, and context for the API call.
+type jsonSchemaDocument struct {
+    Schema      string                          `json:"$schema"`
+    Ref         string                          `json:"$ref"` 
+    Definitions map[string]jsonSchemaDefinition `json:"definitions"`
+}
+
+type jsonSchemaDefinition struct {
+    Properties map[string]jsonSchemaProperty `json:"properties"` 
+    Required   []string                      `json:"required,omitempty"`
+    Type       string                        `json:"type"`
+    Title      string                        `json:"title,omitempty"`
+    // Add other fields from the definition if needed
+}
+
+type jsonSchemaProperty struct {
+    Type    string `json:"type"`
+    Format  string `json:"format,omitempty"`
+    Example string `json:"example,omitempty"`
+}
+
 templ ApiFormBuilder(schemaName string, schemaData json.RawMessage, serviceName string, methodName string, apiEndpoint string) {
     <div class="api-form-container">
-        <h3>Form for { schemaName } ({ serviceName }/{ methodName })</h3>
-        <p>This form will dynamically build fields based on the schema.</p>
-        <p>Target Endpoint: <code>{ apiEndpoint }</code></p>
-        <h4>Raw Schema:</h4>
-        <pre><code>{ string(schemaData) }</code></pre>
+        <h3>Request for { schemaName }</h3>
+        <p>Service: { serviceName } / Method: { methodName }</p>
+        <p>Target: <code>{ apiEndpoint }</code></p>
+
+        <form hx-post="/explorer/components/api-call"
+              hx-target="#api-response-viewer"
+              hx-swap="outerHTML"
+              hx-indicator="#form-spinner"
+              hx-headers={fmt.Sprintf("{ \"Hx-Data-Service\": \"%s\", \"Hx-Data-Method\": \"%s\" }", serviceName, methodName)}
+            >
+            @renderFormFields(schemaName, schemaData)
+            <button type="submit" class="btn btn-primary mt-3">Send Request</button>
+            <span id="form-spinner" class="htmx-indicator ml-2">
+                Loading...
+            </span>
+        </form>
     </div>
+}
+
+// Helper Templ function that dynamically builds form inputs.
+templ renderFormFields(schemaName string, schemaData json.RawMessage) {
+    {{ var doc jsonSchemaDocument }}
+
+    // Unmarshal the entire schema document
+    if err := json.Unmarshal(schemaData, &doc); err != nil {
+        <p class="error">Error parsing schema document for { schemaName }: { fmt.Sprintf("%v", err) }</p>
+        return
+    }
+
+    // Extract the definition name from the $ref, e.g., "GreetRequest" from "#/definitions/GreetRequest"
+    {{ var definitionName string
+    if strings.HasPrefix(doc.Ref, "#/definitions/") {
+        definitionName = strings.TrimPrefix(doc.Ref, "#/definitions/")
+    } else {
+        // Fallback or error if $ref is not in expected format
+        definitionName = schemaName // Use schemaName as a fallback key if $ref is missing or malformed
+    }
+    }}
+
+    // Get the specific definition (e.g., "GreetRequest") from the definitions map
+    {{ definition, ok := doc.Definitions[definitionName] }}
+    if !ok {
+        <p class="error">Error: Definition '{ definitionName }' not found in schema definitions for { schemaName }</p>
+        return
+    }
+
+    // Now, 'definition' contains the 'properties' and 'required' fields
+    // Use definition.Properties and definition.Required below
+    
+    if len(definition.Properties) == 0 {
+        <p class="no-fields">This API method does not require any input fields.</p>
+        <input type="hidden" name="empty_request" value="true"/>
+    }
+
+    for propName, prop := range definition.Properties {
+        <div class="form-group mb-3">
+            <label for={ strings.ToLower(propName) }>{ propName }
+                if IsRequiredField(propName, definition.Required) { 
+                    <span class="text-danger">*</span>
+                }
+                ({ prop.Type })
+            </label>
+            if prop.Type == "string" {
+                <input type="text"
+                       id={ strings.ToLower(propName) }
+                       name={ propName }
+                       class="form-control"
+                       placeholder={ prop.Example }
+                       required?={ IsRequiredField(propName, definition.Required) } 
+                />
+            } else if prop.Type == "integer" || prop.Type == "number" {
+                <input type="number"
+                       id={ strings.ToLower(propName) }
+                       name={ propName }
+                       class="form-control"
+                       placeholder={ prop.Example }
+                       required?={ IsRequiredField(propName, definition.Required) }
+                />
+            } else {
+                <textarea id={ strings.ToLower(propName) }
+                          name={ propName }
+                          class="form-control"
+                          placeholder="Enter JSON string (e.g., {'key': 'value'})"
+                          rows="3"
+                          required?={ IsRequiredField(propName, definition.Required) }
+                >{ prop.Example }</textarea>
+            }
+        </div>
+    }
+}
+
+// function to check if a field is required.
+func IsRequiredField(propName string, required []string) bool {
+    for _, req := range required {
+        if req == propName {
+            return true
+        }
+    }
+    return false
 }
