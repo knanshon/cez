@@ -5,13 +5,14 @@ package explorer_components
 templ ApiMethodSelector(methods []map[string]string) {
     <div id="api-method-selector">
         <label for="method-select">Select API Method:</label>
-        <select id="method-select" class="form-control"
-                hx-get="/explorer/components/api-form-builder"     
+        <select id="method-select" class="form-control"     
+                x-data
+                @htmx:config-request='hxAddSelectDataHeaders($event, $el)'
+                hx-get="/explorer/components/api-form-builder"    
                 hx-trigger="change"          
                 hx-target="#api-form-area"     
-                hx-swap="innerHTML"              
-                name="method"                    
-        >
+                hx-swap="innerHTML"   
+                name="method">
             <option value="">-- Choose a method --</option>
             for _, method := range methods {
                 <option
